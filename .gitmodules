@@ -1,0 +1,3 @@
+[submodule "AutoBloomer-Protobuf"]
+	path = AutoBloomer-Protobuf
+	url = git@github.com:plb500/AutoBloomer-Protobuf.git
