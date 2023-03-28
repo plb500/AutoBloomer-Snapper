@@ -37,29 +37,79 @@ details = AnnotationDetails(
 )
 
 # Fonts
-# SENSOR_AGE_DATA_FONT_FILE = "assets/cq-mono.otf"
 SENSOR_AGE_DATA_FONT_FILE = "assets/Sono-Medium.ttf"
 GROW_SYSTEM_NAME_FONT_FILE = "assets/highland-gothic.ttf"
 
 # Colors
-ANNOTATION_BACKGROUND_COLOR = (0, 0, 0, 150)
+ANNOTATION_BACKGROUND_COLOR = (0, 0, 0, 110)
 GROW_SYSTEM_NAME_COLOR = (137, 255, 142, 255)
-# SENSOR_LABEL_COLOR = (43, 216, 255, 255)
-# SENSOR_VALUE_COLOR = (255, 255, 255, 255)
+GROW_SYSTEM_NAME_STROKE_COLOR = (12, 33, 13, 255)
 SENSOR_VALUE_COLOR = (0, 208, 255, 255)
 SENSOR_LABEL_COLOR = (191, 243, 255, 255)
-AGE_COLOR = (222, 222, 222, 255)
-# AGE_COLOR = (180, 140, 255, 255)
-#AGE_COLOR = (255, 188, 00, 255)
+AGE_COLOR = (247, 255, 158, 255)
+AGE_STROKE_COLOR = (32, 33, 14, 255)
 
 # Image ratios
-image_height_to_grow_system_name_ratio = 0.04
-image_height_to_sensor_data_ratio = 0.025
-image_height_to_age_ratio = 0.03
+IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO = 0.03
+IMAGE_HEIGHT_TO_SENSOR_DATA_RATIO = 0.0225
+IMAGE_HEIGHT_TO_AGE_RATIO = 0.03
+IMAGE_HEIGHT_TO_SENSOR_PADDING_RATIO = 0.01
+
+
+def annotate_grow_system_name_and_age(name, age, dst_image):
+    grow_system_name_font_height = int(dst_image.height * IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO)
+    grow_system_name_font = ImageFont.truetype(GROW_SYSTEM_NAME_FONT_FILE, grow_system_name_font_height)
+
+    age_font_height = int(dst_image.height * IMAGE_HEIGHT_TO_AGE_RATIO)
+    age_font = ImageFont.truetype(SENSOR_AGE_DATA_FONT_FILE, age_font_height)
+    age_string = "Day {}".format(age)
+
+    padding = (grow_system_name_font_height / 2)
+
+    # Get a drawing context for our image
+    draw = ImageDraw.Draw(dst_image)
+
+    # Calculate draw positions
+    age_bb = age_font.getbbox(age_string, anchor="ls")
+    age_height = age_bb[3] - age_bb[1]
+    age_text_xy = (
+        padding,
+        dst_image.height - padding - age_height
+    )
+
+    grow_system_name_bb = grow_system_name_font.getbbox(name, anchor="lt")
+    grow_system_name_height = grow_system_name_bb[3] - grow_system_name_bb[1]
+
+    grow_system_name_xy = (
+        padding,
+        age_text_xy[1] - padding - grow_system_name_height
+    )
+
+    draw.text(
+        xy=grow_system_name_xy,
+        text=name,
+        fill=GROW_SYSTEM_NAME_COLOR,
+        stroke_fill=GROW_SYSTEM_NAME_STROKE_COLOR,
+        stroke_width=6,
+        font=grow_system_name_font,
+        anchor="lt"
+    )
+
+    # Draw
+    draw = ImageDraw.Draw(dst_image)
+    draw.text(
+        xy=age_text_xy,
+        text=age_string,
+        fill=AGE_COLOR,
+        font=age_font,
+        stroke_width=4,
+        stroke_fill=AGE_STROKE_COLOR,
+        anchor="lt"
+    )
 
 
 def annotate_grow_system_name(name, dst_image):
-    grow_system_name_font_height = int(dst_image.height * image_height_to_grow_system_name_ratio)
+    grow_system_name_font_height = int(dst_image.height * IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO)
     grow_system_name_font = ImageFont.truetype(GROW_SYSTEM_NAME_FONT_FILE, grow_system_name_font_height)
 
     # Get a drawing context for our image
@@ -67,21 +117,12 @@ def annotate_grow_system_name(name, dst_image):
 
     # Calculate draw positions
     grow_system_name_bb = grow_system_name_font.getbbox(name, anchor="lt")
-    grow_system_name_width = grow_system_name_bb[2] - grow_system_name_bb[0]
     grow_system_name_height = grow_system_name_bb[3] - grow_system_name_bb[1]
-    grow_system_name_rect_height = (grow_system_name_height * 2)
-    grow_system_name_left = (grow_system_name_height / 2)
-    # grow_system_name_left = (dst_image.width / 2) - (grow_system_name_width / 2)
-    grow_system_name_top = (dst_image.height - (grow_system_name_rect_height / 2) - (grow_system_name_height / 2))
+    grow_system_name_padding = (grow_system_name_height / 2)
 
-    grow_system_name_rect = [
-        0,
-        (dst_image.height - grow_system_name_rect_height),
-        dst_image.width,
-        dst_image.height
-    ]
+    grow_system_name_left = grow_system_name_padding
+    grow_system_name_top = (dst_image.height - grow_system_name_padding - grow_system_name_height)
 
-    # draw.rectangle(grow_system_name_rect, ANNOTATION_BACKGROUND_COLOR)
     draw.text(
         xy=(grow_system_name_left, grow_system_name_top),
         text=name,
@@ -99,8 +140,9 @@ def annotate_sensor_data(sensor_data, dst_image):
     if len(sensor_data) == 0:
         return
 
-    sensor_data_font_height = int(dst_image.height * image_height_to_sensor_data_ratio)
+    sensor_data_font_height = int(dst_image.height * IMAGE_HEIGHT_TO_SENSOR_DATA_RATIO)
     sensor_data_font = ImageFont.truetype(SENSOR_AGE_DATA_FONT_FILE, sensor_data_font_height)
+    box_padding = int(dst_image.height * IMAGE_HEIGHT_TO_SENSOR_PADDING_RATIO)
 
     # Calculate draw positions
     num_entries = len(sensor_data)
@@ -117,6 +159,7 @@ def annotate_sensor_data(sensor_data, dst_image):
     sensor_data_background_height = ((num_entries + 1) * entry_spacing_vertical)
 
     sensor_data_draw_positions = []
+    x_pos = dst_image.width - sensor_data_background_width - box_padding
     entry_y_pos = entry_spacing_vertical
     for count, entry in enumerate(sensor_data):
         lb = sensor_data_font.getbbox(entry.label, anchor="ls")
@@ -127,7 +170,7 @@ def annotate_sensor_data(sensor_data, dst_image):
         vb_height = vb[3] - vb[1]
         max_height = max(lb_height, vb_height)
 
-        label_x = label_value_spacing + (longest_label_width - lb_width)
+        label_x = x_pos + label_value_spacing + (longest_label_width - lb_width)
         label_y = entry_y_pos + -(lb[1])
 
         value_x = label_x + lb_width + label_value_spacing
@@ -141,22 +184,27 @@ def annotate_sensor_data(sensor_data, dst_image):
                 value_pos=(value_x, value_y)
             )
         )
-
+    y_pos = dst_image.height - sensor_data_background_height - box_padding
     sensor_data_background_rect = [
-        0,
-        0,
-        sensor_data_background_width,
-        sensor_data_background_height
+        x_pos,
+        y_pos,
+        x_pos + sensor_data_background_width,
+        y_pos + sensor_data_background_height
     ]
 
     # OK, done calculating. Draw stuff
     draw = ImageDraw.Draw(dst_image)
-    draw.rectangle(sensor_data_background_rect, ANNOTATION_BACKGROUND_COLOR)
+    # draw.rectangle(sensor_data_background_rect, ANNOTATION_BACKGROUND_COLOR)
+    draw.rounded_rectangle(
+        xy=sensor_data_background_rect,
+        radius=15,
+        fill=ANNOTATION_BACKGROUND_COLOR
+    )
 
     for count, entry in enumerate(sensor_data):
         draw_positions = sensor_data_draw_positions[count]
         draw.text(
-            xy=(draw_positions.label_pos[0], draw_positions.label_pos[1]),
+            xy=(draw_positions.label_pos[0], y_pos + draw_positions.label_pos[1]),
             text=entry.label,
             fill=SENSOR_LABEL_COLOR,
             font=sensor_data_font,
@@ -164,7 +212,7 @@ def annotate_sensor_data(sensor_data, dst_image):
         )
 
         draw.text(
-            xy=(draw_positions.value_pos[0], draw_positions.value_pos[1]),
+            xy=(draw_positions.value_pos[0], y_pos + draw_positions.value_pos[1]),
             text=entry.value,
             fill=SENSOR_VALUE_COLOR,
             font=sensor_data_font,
@@ -173,31 +221,22 @@ def annotate_sensor_data(sensor_data, dst_image):
 
 
 def annotate_age(age, dst_image):
-    age_font_height = int(dst_image.height * image_height_to_age_ratio)
+    age_font_height = int(dst_image.height * IMAGE_HEIGHT_TO_AGE_RATIO)
     age_font = ImageFont.truetype(SENSOR_AGE_DATA_FONT_FILE, age_font_height)
-    age_string = "Day: {:3d}".format(age)
+    age_string = "Day {}".format(age)
 
     # Calculate positions
-    age_spacing = age_font.getlength(" ")
     age_bb = age_font.getbbox(age_string, anchor="ls")
-    age_width = age_bb[2] - age_bb[0]
     age_height = age_bb[3] - age_bb[1]
-    age_box_width = (age_width + (age_spacing * 2))
-    age_box_height = (2 * age_height)
-    age_box_rect = [
-        dst_image.width - age_box_width,
-        0,
-        dst_image.width,
-        age_box_height
-    ]
+    age_padding = (age_height / 2)
     text_xy = (
-        (age_box_rect[0] + age_spacing),
-        age_height -(age_bb[1] / 2)
+        # (dst_image.width - age_width - age_padding),
+        age_padding,
+        age_padding
     )
 
     # Draw
     draw = ImageDraw.Draw(dst_image)
-    # draw.rectangle(age_box_rect, ANNOTATION_BACKGROUND_COLOR)
     draw.text(
         xy=text_xy,
         text=age_string,
@@ -205,7 +244,7 @@ def annotate_age(age, dst_image):
         font=age_font,
         stroke_width=4,
         stroke_fill=(0, 0, 0, 255),
-        anchor="ls"
+        anchor="lt"
     )
 
 
@@ -214,9 +253,8 @@ def annotate_image(image_file, annotation_details):
         # Make a blank image for the annotations, initialized to transparent text color
         annotation_image = Image.new("RGBA", image.size, (255, 255, 255, 0))
 
-        annotate_grow_system_name(annotation_details.grow_system_name, annotation_image)
+        annotate_grow_system_name_and_age(annotation_details.grow_system_name, annotation_details.age, annotation_image)
         annotate_sensor_data(annotation_details.sensor_data_strings, annotation_image)
-        annotate_age(annotation_details.age, image)
 
         out = Image.alpha_composite(image, annotation_image)
         out.show()
