@@ -34,9 +34,9 @@ class ImageAnnotator(object):
     # Colors
     GROW_SYSTEM_NAME_COLOR = (137, 255, 142, 255)
     GROW_SYSTEM_NAME_STROKE_COLOR = (12, 33, 13, 255)
-    SENSOR_VALUE_COLOR = (0, 208, 255, 255)
+    SENSOR_VALUE_COLOR = (0, 242, 255, 255)
     SENSOR_LABEL_COLOR = (191, 243, 255, 255)
-    SENSOR_BACKGROUND_COLOR = (0, 0, 0, 150)
+    SENSOR_BACKGROUND_COLOR = (0, 0, 0, 165)
     SENSOR_OUTLINE_COLOR = (255, 255, 255, 255)
     AGE_COLOR = (247, 255, 158, 255)
     AGE_STROKE_COLOR = (32, 33, 14, 255)
@@ -246,4 +246,5 @@ annotated_image = ImageAnnotator.annotate_image(
     image_file=SOURCE_FILE,
     annotation_details=DETAILS
 )
+# annotated_image.show()
 annotated_image.save("assets/output.jpg")
