@@ -62,7 +62,7 @@ class ImageAnnotator(object):
             )
             ImageAnnotator._annotate_sensor_data(annotation_details.sensor_data_strings, annotation_image)
 
-            return Image.alpha_composite(image, annotation_image)
+            return Image.alpha_composite(image, annotation_image).convert('RGB')
 
     @staticmethod
     def _antialiased_rounded_rect(width, height, radius, stroke, stroke_width, fill):
@@ -162,7 +162,12 @@ class ImageAnnotator(object):
         longest_label_width = (label_bb[2] - label_bb[0])
         longest_value_width = (value_bb[2] - value_bb[0])
 
-        sensor_data_background_width = (2 * box_interior_padding) + longest_label_width + longest_value_width + label_value_spacing
+        sensor_data_background_width = (
+            (2 * box_interior_padding) +
+            longest_label_width +
+            longest_value_width +
+            label_value_spacing
+        )
         sensor_data_background_height = ((num_entries - 1) * entry_spacing_vertical) + (2 * box_interior_padding)
 
         sensor_data_draw_positions = []
@@ -241,4 +246,4 @@ annotated_image = ImageAnnotator.annotate_image(
     image_file=SOURCE_FILE,
     annotation_details=DETAILS
 )
-annotated_image.show()
+annotated_image.save("assets/output.jpg")
