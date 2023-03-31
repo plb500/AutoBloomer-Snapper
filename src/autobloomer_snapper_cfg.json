@@ -1,10 +1,28 @@
 {
     "server_options": {
         "host_name": "localhost",
-        "port_number": 50051,
+        "port_number": 42000,
         "server_passphrase": "MY_KEY"
     },
     "data_options": {
-        "grow_system_id": 0
+        "grow_system_id": 0,
+        "sensor_details": [
+            {
+                "sensor_id": 2,
+                "reading_id": 0
+            },
+            {
+                "sensor_id": 2,
+                "reading_id": 1
+            },
+            {
+                "sensor_id": 2,
+                "reading_id": 2
+            },
+            {
+                "sensor_id": 2,
+                "reading_id": 3
+            }
+        ]
     }
 }

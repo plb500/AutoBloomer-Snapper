@@ -1,6 +1,7 @@
 from enum import Enum
 
 from pyproto.protomodel.helpers.data_factory import DataFactory
+from src.annotation_grabber import ReadingDetails
 
 
 class SnapperConfigParseResponse(str, Enum):
@@ -20,6 +21,9 @@ class SnapperConfigOptions(object):
         SERVER_PASSPHRASE_KEY = "server_passphrase"
         DATA_OPTIONS_KEY = "data_options"
         GROW_SYSTEM_ID_KEY = "grow_system_id"
+        SENSOR_DETAILS_KEY = "sensor_details"
+        SENSOR_ID_KEY = "sensor_id"
+        READING_ID_KEY = "reading_id"
 
     def __init__(self, data_root):
         self.options_parsed = False
@@ -29,6 +33,7 @@ class SnapperConfigOptions(object):
         self.port_number = None
         self.passphrase = None
         self.grow_system_id = None
+        self.sensor_readings = []
 
     def read_config(self, file_name):
         self.options_parsed = False
@@ -67,6 +72,19 @@ class SnapperConfigOptions(object):
 
         # Data options
         self.grow_system_id = data_options[SnapperConfigOptions.ConfigKeys.GROW_SYSTEM_ID_KEY]
+        reading_params = data_options.get(SnapperConfigOptions.ConfigKeys.SENSOR_DETAILS_KEY, None)
+        if reading_params is not None:
+            for reading_param in reading_params:
+                sensor_id = reading_param.get(SnapperConfigOptions.ConfigKeys.SENSOR_ID_KEY, None)
+                reading_id = reading_param.get(SnapperConfigOptions.ConfigKeys.READING_ID_KEY, None)
+
+                if sensor_id is not None and reading_id is not None:
+                    self.sensor_readings.append(
+                        ReadingDetails(
+                            sensor_id=sensor_id,
+                            reading_id=reading_id
+                        )
+                    )
 
         self.options_parsed = True
 

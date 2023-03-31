@@ -7,10 +7,45 @@ SensorDataStrings = namedtuple("SensorDataStrings", "label value")
 
 
 class AnnotationDetails(object):
-    def __init__(self, grow_system_name, age, sensor_data_strings):
+    MAX_SENSOR_VALUE_LENGTH = 7
+
+    def __init__(self, grow_system_name, age, sensor_data_strings=None):
         self.grow_system_name = grow_system_name
         self.age = age
         self.sensor_data_strings = sensor_data_strings
+        if self.sensor_data_strings is None:
+            self.sensor_data_strings = []
+
+    def add_sensor_value(self, sensor_label, sensor_value):
+        sensor_label_string = "{}:".format(sensor_label)
+        sensor_value_string = AnnotationDetails.format_sensor_value(sensor_value)
+        self.sensor_data_strings.append(
+            SensorDataStrings(
+                label=sensor_label_string,
+                value=sensor_value_string
+            )
+        )
+
+    @staticmethod
+    def format_sensor_value(value):
+        if isinstance(value, int):
+            string_value = "{}".format(value)
+        elif isinstance(value, float):
+            string_value = "{0:.2f}".format(value).rstrip('0').rstrip('.')
+        elif isinstance(value, bool):
+            string_value = "TRUE" if value else "FALSE"
+        else:
+            string_value = "????"
+
+        if len(string_value) < AnnotationDetails.MAX_SENSOR_VALUE_LENGTH:
+            num_leading_spaces = AnnotationDetails.MAX_SENSOR_VALUE_LENGTH - len(string_value)
+            for _ in range(num_leading_spaces):
+                string_value = " " + string_value
+        elif len(string_value) > AnnotationDetails.MAX_SENSOR_VALUE_LENGTH:
+            # Ugh. Hopefully this doesn't happen
+            pass
+
+        return string_value
 
     def longest_sensor_data_label_length(self):
         if len(self.sensor_data_strings) == 0:
@@ -24,6 +59,13 @@ class AnnotationDetails(object):
 
         return max(self.sensor_data_strings, key=lambda x: len(x.value)).value
 
+    def print_details(self):
+        print("Grow system name: {}".format(self.grow_system_name))
+        print(" Grow system age: {}".format(self.age))
+        print("         Sensors: {}".format("" if len(self.sensor_data_strings) > 0 else "None"))
+        for sd in self.sensor_data_strings:
+            print("                - {} {}".format(sd.label, sd.value))
+
 
 class ImageAnnotator(object):
     # Fonts
@@ -35,14 +77,14 @@ class ImageAnnotator(object):
     GROW_SYSTEM_NAME_COLOR = (137, 255, 142, 255)
     GROW_SYSTEM_NAME_STROKE_COLOR = (12, 33, 13, 255)
     SENSOR_VALUE_COLOR = (0, 242, 255, 255)
-    SENSOR_LABEL_COLOR = (191, 243, 255, 255)
+    SENSOR_LABEL_COLOR = (220, 220, 220, 255)
     SENSOR_BACKGROUND_COLOR = (0, 0, 0, 165)
     SENSOR_OUTLINE_COLOR = (255, 255, 255, 255)
     AGE_COLOR = (247, 255, 158, 255)
     AGE_STROKE_COLOR = (32, 33, 14, 255)
 
     # Image ratios
-    IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO = 0.03
+    IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO = 0.0325
     IMAGE_HEIGHT_TO_SENSOR_DATA_RATIO = 0.0225
     IMAGE_HEIGHT_TO_AGE_RATIO = 0.025
     IMAGE_HEIGHT_TO_SENSOR_INTERIOR_PADDING_RATIO = 0.0175
@@ -52,7 +94,7 @@ class ImageAnnotator(object):
     @staticmethod
     def annotate_image(image_file, annotation_details):
         with Image.open(image_file).convert("RGBA") as image:
-            # Make a blank image for the annotations, initialized to transparent text color
+            # Make a blank image for the annotations, initialized to transparent background color
             annotation_image = Image.new("RGBA", image.size, (255, 255, 255, 0))
 
             ImageAnnotator._annotate_grow_system_name_and_age(
@@ -231,20 +273,31 @@ class ImageAnnotator(object):
 
 
 SOURCE_FILE = "assets/plants.jpg"
-DETAILS = AnnotationDetails(
-    grow_system_name="Harvest Chamber",
-    age=45,
-    sensor_data_strings=[
-        SensorDataStrings("Carbon Dioxide (PPM):", " 440"),
-        SensorDataStrings("Temperature (°C):", "29.1"),
-        SensorDataStrings("Humidity (%):", "46.3"),
-        SensorDataStrings("Soil Moisture (%):", "60.4")
-    ]
+details_2 = AnnotationDetails(
+    grow_system_name="Full cycle chamber",
+    age=45
 )
+details_2.add_sensor_value(
+    sensor_label="Carbon Dioxide (PPM)",
+    sensor_value=440
+)
+details_2.add_sensor_value(
+    sensor_label="Temperature (°C)",
+    sensor_value=29.13
+)
+details_2.add_sensor_value(
+    sensor_label="Humidity (%)",
+    sensor_value=46.3
+)
+details_2.add_sensor_value(
+    sensor_label="Soil Moisture (%)",
+    sensor_value=3.56
+)
+
 
 annotated_image = ImageAnnotator.annotate_image(
     image_file=SOURCE_FILE,
-    annotation_details=DETAILS
+    annotation_details=details_2
 )
 # annotated_image.show()
 annotated_image.save("assets/output.jpg")
