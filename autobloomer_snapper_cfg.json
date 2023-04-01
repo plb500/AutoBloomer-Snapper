@@ -1,6 +1,6 @@
 {
     "server_options": {
-        "host_name": "localhost",
+        "host_name": "192.168.1.204",
         "port_number": 42000,
         "server_passphrase": "MY_KEY"
     },

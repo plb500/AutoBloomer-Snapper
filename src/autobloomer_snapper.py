@@ -56,7 +56,7 @@ def main():
 
     if annotation_details is not None:
         annotated_image = ImageAnnotator.annotate_image(
-            image_file=output_filename,
+            image_file=image_path,
             annotation_details=annotation_details
         )
 
