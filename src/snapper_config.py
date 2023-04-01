@@ -1,7 +1,7 @@
 from enum import Enum
 
 from pyproto.protomodel.helpers.data_factory import DataFactory
-from src.annotation_grabber import ReadingDetails
+from annotation_grabber import ReadingDetails
 
 
 class SnapperConfigParseResponse(str, Enum):
@@ -24,6 +24,7 @@ class SnapperConfigOptions(object):
         SENSOR_DETAILS_KEY = "sensor_details"
         SENSOR_ID_KEY = "sensor_id"
         READING_ID_KEY = "reading_id"
+        IMAGE_DESTINATION = "image_destination"
 
     def __init__(self, data_root):
         self.options_parsed = False
@@ -33,6 +34,7 @@ class SnapperConfigOptions(object):
         self.port_number = None
         self.passphrase = None
         self.grow_system_id = None
+        self.image_destination = None
         self.sensor_readings = []
 
     def read_config(self, file_name):
@@ -57,6 +59,7 @@ class SnapperConfigOptions(object):
         ]
         data_options_required = [
             SnapperConfigOptions.ConfigKeys.GROW_SYSTEM_ID_KEY,
+            SnapperConfigOptions.ConfigKeys.IMAGE_DESTINATION
         ]
 
         if not all(item in server_options.keys() for item in server_options_required):
@@ -72,6 +75,7 @@ class SnapperConfigOptions(object):
 
         # Data options
         self.grow_system_id = data_options[SnapperConfigOptions.ConfigKeys.GROW_SYSTEM_ID_KEY]
+        self.image_destination = data_options[SnapperConfigOptions.ConfigKeys.IMAGE_DESTINATION]
         reading_params = data_options.get(SnapperConfigOptions.ConfigKeys.SENSOR_DETAILS_KEY, None)
         if reading_params is not None:
             for reading_param in reading_params:

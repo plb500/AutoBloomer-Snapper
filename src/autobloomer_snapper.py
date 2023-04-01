@@ -3,11 +3,11 @@ import sys
 from datetime import datetime
 
 from snapper_config import SnapperConfigOptions, SnapperConfigParseResponse
-from src.annotation_grabber import AnnotationGrabber, ReadingDetails
-from src.image_annotator import ImageAnnotator
-from src.image_grabber import ImageGrabber
+from annotation_grabber import AnnotationGrabber
+from image_annotator import ImageAnnotator
+from image_grabber import ImageGrabber
 
-CONFIG_FILE = "autobloomer_snapper_cfg.json"
+CONFIG_FILE = "../autobloomer_snapper_cfg.json"
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 IMAGE_WIDTH = 3840
 IMAGE_HEIGHT = 2160
@@ -24,14 +24,15 @@ def main():
 
     # Get the filename for the annotated image
     now = datetime.now()
-    timestamp_string = now.strftime("%Y%m%d%%H%M%s")
+    timestamp_string = now.strftime("%Y%m%d%H%M%s")
     output_filename = "{}.jpg".format(timestamp_string)
+    image_path = os.path.join(config_parser.image_destination, output_filename)
 
     # Grab the image
     if not ImageGrabber.grab_image(
         width=IMAGE_WIDTH,
         height=IMAGE_HEIGHT,
-        output_filename=output_filename
+        output_filename=image_path
     ):
         print("Could not grab image")
         sys.exit()
@@ -46,12 +47,14 @@ def main():
         config_parser.grow_system_id,
         reading_details=config_parser.sensor_readings
     )
-    annotated_image = ImageAnnotator.annotate_image(
-        image_file=output_filename,
-        annotation_details=annotation_details
-    )
 
-    annotated_image.save("assets/output.jpg")
+    if annotation_details is not None:
+        annotated_image = ImageAnnotator.annotate_image(
+            image_file=output_filename,
+            annotation_details=annotation_details
+        )
+
+        annotated_image.save(image_path)
 
 
 if __name__ == "__main__":

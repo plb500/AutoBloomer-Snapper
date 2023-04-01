@@ -12,7 +12,7 @@ from pyproto.protomodel.database.grow_database_operation_response import GrowDat
 from pyproto.protomodel.sensors.sensors import SensorData
 from pyproto.server.grpc_client_interceptor import PiFeederClientInterceptor
 from pyproto.server.grpc_server_auth_interceptor import GrpcServerAuthInterceptor
-from src.image_annotator import AnnotationDetails
+from image_annotator import AnnotationDetails
 
 ReadingDetails = namedtuple("ReadingDetails", "sensor_id reading_id")
 
@@ -67,7 +67,11 @@ class AnnotationGrabber(object):
                     for details in reading_details:
                         d = sensor_data.get(details.sensor_id, None)
                         if d is not None:
-                            r = next(filter(lambda rd: rd.description.reading_id == details.reading_id, d.sensor_readings), None)
+                            r = next(
+                                filter(
+                                    lambda rd: rd.description.reading_id == details.reading_id, d.sensor_readings
+                                ), None
+                            )
                             if r is not None:
                                 annotation_details.add_sensor_value(
                                     sensor_value=r.value,
