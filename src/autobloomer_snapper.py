@@ -30,7 +30,7 @@ def main():
 
     # Get the filename for the annotated image
     now = datetime.now()
-    timestamp_string = now.strftime("%Y%m%d%H%M%S")
+    timestamp_string = now.strftime("%Y-%m-%d__%H-%M")
     output_filename = "{}.jpg".format(timestamp_string)
     image_path = os.path.join(config_parser.image_destination, output_filename)
 

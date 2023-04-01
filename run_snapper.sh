@@ -1,13 +1,14 @@
 #!/bin/bash
 
+# This shoudl be the only thing you would ever change, if you are using a config file in a different location
 CONFIG_FILE="autobloomer_snapper_cfg.json"
 
+# Don't change these (usually)
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 PROG_DIR="${SCRIPT_DIR}/src"
 PROTO_DIR="${SCRIPT_DIR}/AutoBloomer-Protobuf/python"
 APP="autobloomer_snapper.py"
 VENV="snapper-env"
-
 
 # Virtual environment stuff
 VENV_PATH=`realpath "${SCRIPT_DIR}/${VENV}"`
@@ -31,16 +32,15 @@ else
 		echo "Detected virtual environment"
 	else
 		echo "Running in the wrong virtual environment. This won't work"
+		echo "Please exit the current virtual environment and run this script again"
 		exit
 	fi
 fi
 
-# We should be good at this point
-
+# We should be good at this point, run the actual script
 pushd ${SCRIPT_DIR} "$@" > /dev/null
 
 export PYTHONPATH=${PROG_DIR}:${PROTO_DIR}
 python3 "${PROG_DIR}/${APP}" -c "${SCRIPT_DIR}/${CONFIG_FILE}"
-
 
 popd "$@" > /dev/null
