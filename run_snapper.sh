@@ -17,7 +17,11 @@ if [[ -z "${VIRTUAL_ENV}" ]]; then
 		echo "Activating virtual environment"
 		source "${VENV_PATH}/bin/activate"
 	else
-		echo "You have not configured the virtual environment requried for AutoBloomer-Snapper"
+		echo "You have not configured the virtual environment required for AutoBloomer-Snapper"
+		echo "To do this please run the following commands:"
+		echo "    python3 -m venv ${VENV}"
+		echo "    source ${VENV_PATH}/bin/activate"
+		echo "    pip3 install -r ${SCRIPT_DIR}/requirements.txt"
 		exit
 	fi
 else
@@ -33,10 +37,10 @@ fi
 
 # We should be good at this point
 
-pushd ${SCRIPT_DIR}
+pushd ${SCRIPT_DIR} "$@" > /dev/null
 
 export PYTHONPATH=${PROG_DIR}:${PROTO_DIR}
 python3 "${PROG_DIR}/${APP}" -c "${SCRIPT_DIR}/${CONFIG_FILE}"
 
 
-popd
+popd "$@" > /dev/null
