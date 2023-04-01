@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 from datetime import datetime
@@ -15,9 +16,14 @@ IMAGE_HEIGHT = 2160
 
 # Application entry point
 def main():
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="AutoBloomer Snapper")
+    parser.add_argument("-c", "--config-file", default=CONFIG_FILE, dest="snapper_config_file")
+    args = parser.parse_args()
+
     # Read config
-    config_parser = SnapperConfigOptions(SCRIPT_PATH)
-    config_response = config_parser.read_config("autobloomer_snapper_cfg.json")
+    config_parser = SnapperConfigOptions(None)
+    config_response = config_parser.read_config(args.snapper_config_file)
     if config_response != SnapperConfigParseResponse.PARSE_OK:
         print("Could not obtain snapper config: {}".format(config_response))
         sys.exit()
