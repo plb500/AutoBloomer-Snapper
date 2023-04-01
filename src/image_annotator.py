@@ -131,16 +131,16 @@ class ImageAnnotator(object):
     @staticmethod
     def _annotate_grow_system_name_and_age(name, age, dst_image):
         grow_system_name_font_path = os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.GROW_SYSTEM_NAME_FONT_FILE)
-        print("Path ", grow_system_name_font_path)
         grow_system_name_font_height = int(dst_image.height * ImageAnnotator.IMAGE_HEIGHT_TO_GROW_SYSTEM_NAME_RATIO)
         grow_system_name_font = ImageFont.truetype(
             grow_system_name_font_path,
             grow_system_name_font_height
         )
 
+        age_font_path = os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.AGE_FONT_FILE)
         age_font_height = int(dst_image.height * ImageAnnotator.IMAGE_HEIGHT_TO_AGE_RATIO)
         age_font = ImageFont.truetype(
-            os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.AGE_FONT_FILE),
+            age_font_path,
             age_font_height
         )
         age_string = "Day {}".format(age)
@@ -195,9 +195,10 @@ class ImageAnnotator(object):
         if len(sensor_data) == 0:
             return
 
+        sensor_data_font_path = os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.SENSOR_DATA_FONT_FILE)
         sensor_data_font_height = int(dst_image.height * ImageAnnotator.IMAGE_HEIGHT_TO_SENSOR_DATA_RATIO)
         sensor_data_font = ImageFont.truetype(
-            os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.SENSOR_DATA_FONT_FILE),
+            sensor_data_font_path,
             sensor_data_font_height
         )
         box_padding = int(dst_image.height * ImageAnnotator.IMAGE_HEIGHT_TO_SENSOR_PADDING_RATIO)
