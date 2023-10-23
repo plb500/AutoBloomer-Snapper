@@ -35,3 +35,13 @@ pip3 install -r requirements.txt
 ```
 
 ## Build protobufs
+
+## Streaming camera (for setting up zoom/focus etc)
+SSH into the Raspberry Pi and run the following command:
+```
+libcamera-vid -t0 --width 1920 --height 1080 --framerate 10 --nopreview --codec h264 --profile high --intra 5 --listen -o tcp://0.0.0.0:8888
+```
+From a remote computer, open VLC, then select "Open Network" and use the following URL (replace XXX.XXX.XXX.XXX with the address of the Raspberry Pi):
+```
+tcp/h264://XXX.XXX.XXX.XXXX:8888
+```
