@@ -1,5 +1,4 @@
 grpcio==1.53.0
 grpcio-tools==1.53.0
 Pillow==9.4.0
-pkg_resources==0.0.0
 protobuf==4.22.1

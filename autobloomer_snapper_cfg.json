@@ -5,7 +5,7 @@
         "server_passphrase": "MY_KEY"
     },
     "data_options": {
-        "image_destination": "/home/pi/AutoBloomer-Snapper/snaps",
+        "image_destination": "/home/autobloomer/snaps",
         "grow_system_id": 0,
         "sensor_details": [
             {
