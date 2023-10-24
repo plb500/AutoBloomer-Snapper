@@ -17,12 +17,13 @@ Use the following commands
 ```
 sudo apt update
 sudo apt upgrade
-sudo apt install git install python3-pip python3-venv libopenjp2-7
+sudo apt install git python3-pip python3-venv libopenjp2-7
 ```
 
 ## Download repo
 ```
 git clone git@github.com:plb500/AutoBloomer-Snapper.git
+cd AutoBloomer-Snapper
 git submodule update --init --recursive
 ```
 
