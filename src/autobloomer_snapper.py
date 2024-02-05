@@ -6,7 +6,7 @@ from datetime import datetime
 from snapper_config import SnapperConfigOptions, SnapperConfigParseResponse
 from annotation_grabber import AnnotationGrabber
 from image_annotator import ImageAnnotator
-from image_grabber import ImageGrabber
+from image_grabber import ImageGrabber, ImageGrabberFactory
 
 CONFIG_FILE = "../autobloomer_snapper_cfg.json"
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +19,7 @@ def main():
     # Parse arguments
     parser = argparse.ArgumentParser(description="AutoBloomer Snapper")
     parser.add_argument("-c", "--config-file", default=CONFIG_FILE, dest="snapper_config_file")
+    parser.add_argument("-d", "--dummy-camera-file", dest="dummy_camera_file")
     args = parser.parse_args()
 
     # Read config
@@ -28,6 +29,10 @@ def main():
         print("Could not obtain snapper config: {}".format(config_response))
         sys.exit()
 
+    # Get the image grabber
+    dummy_file = args.dummy_camera_file
+    image_grabber = ImageGrabberFactory.get_image_grabber(dummy_file=dummy_file)
+
     # Get the filename for the annotated image
     now = datetime.now()
     timestamp_string = now.strftime("%Y-%m-%d__%H-%M")
@@ -35,7 +40,7 @@ def main():
     image_path = os.path.join(config_parser.image_destination, output_filename)
 
     # Grab the image
-    if not ImageGrabber.grab_image(
+    if not image_grabber.grab_image(
         width=IMAGE_WIDTH,
         height=IMAGE_HEIGHT,
         output_filename=image_path
@@ -51,7 +56,7 @@ def main():
 
     annotation_details = annotation_grabber.grab_annotations(
         config_parser.grow_system_id,
-        reading_details=config_parser.sensor_readings
+        sensor_annotation_descriptions=config_parser.sensor_readings
     )
 
     if annotation_details is not None:

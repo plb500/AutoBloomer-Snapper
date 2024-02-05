@@ -1,7 +1,7 @@
 from enum import Enum
 
 from pyproto.protomodel.helpers.data_factory import DataFactory
-from annotation_grabber import ReadingDetails
+from annotation_grabber import ReadingAnnotationDetails
 
 
 class SnapperConfigParseResponse(str, Enum):
@@ -24,6 +24,7 @@ class SnapperConfigOptions(object):
         SENSOR_DETAILS_KEY = "sensor_details"
         SENSOR_ID_KEY = "sensor_id"
         READING_ID_KEY = "reading_id"
+        DISPLAY_NAME_KEY = "annotation_label"
         IMAGE_DESTINATION = "image_destination"
 
     def __init__(self, data_root):
@@ -81,12 +82,14 @@ class SnapperConfigOptions(object):
             for reading_param in reading_params:
                 sensor_id = reading_param.get(SnapperConfigOptions.ConfigKeys.SENSOR_ID_KEY, None)
                 reading_id = reading_param.get(SnapperConfigOptions.ConfigKeys.READING_ID_KEY, None)
+                display_name = reading_param.get(SnapperConfigOptions.ConfigKeys.DISPLAY_NAME_KEY, None)
 
                 if sensor_id is not None and reading_id is not None:
                     self.sensor_readings.append(
-                        ReadingDetails(
+                        ReadingAnnotationDetails(
                             sensor_id=sensor_id,
-                            reading_id=reading_id
+                            reading_id=reading_id,
+                            display_name=display_name
                         )
                     )
 
