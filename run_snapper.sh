@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This shoudl be the only thing you would ever change, if you are using a config file in a different location
+# This should be the only thing you would ever change, if you are using a config file in a different location
 CONFIG_FILE="autobloomer_snapper_cfg.json"
 
 # Don't change these (usually)

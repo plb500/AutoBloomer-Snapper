@@ -39,7 +39,7 @@ pip3 install -r requirements.txt
 ```
 cd AutoBloomer-Snapper
 source snapper-env/bin/activate
-cd python/pyproto
+cd AutoBloomer-Protobuf/python/pyproto
 ./protobuf_build_python.sh
 ```
 
@@ -59,7 +59,7 @@ App is configured via the file `autobloomer_snapper_cfg.json`, found in the repo
 ## Running program
 Inside the repo root is a file called `run_snapper.sh`. This will take a single image from the camera, read the sensor data, annotate the image with grow system details and store the image in the directory specified by the config file
 
-To get the program to generate images on a schedule (i.e. take a picture eery 5 minutes), the easiest way is to call the above script via crontab. You can edit the crontab file by using
+To get the program to generate images on a schedule (i.e. take a picture every 5 minutes), the easiest way is to call the above script via crontab. You can edit the crontab file by using
 ```
 crontab -e
 ```
