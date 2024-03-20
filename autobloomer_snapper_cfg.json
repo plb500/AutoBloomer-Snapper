@@ -1,28 +1,32 @@
 {
     "server_options": {
-        "host_name": "192.168.1.204",
+        "host_name": "192.168.1.202",
         "port_number": 42000,
         "server_passphrase": "MY_KEY"
     },
     "data_options": {
-        "image_destination": "/home/autobloomer/snaps",
+        "image_destination": "/Users/philip/.autobloomer/snaps",
         "grow_system_id": 0,
         "sensor_details": [
             {
-                "sensor_id": 2,
-                "reading_id": 0
+                "sensor_id": "HarvestChamber-SensorPod",
+                "reading_id": "CO2",
+                "annotation_label": "Carbon Dioxide (PPM)"
             },
             {
-                "sensor_id": 2,
-                "reading_id": 1
+                "sensor_id": "HarvestChamber-SensorPod",
+                "reading_id": "Temperature",
+                "annotation_label": "Temperature (°C)"
             },
             {
-                "sensor_id": 2,
-                "reading_id": 2
+                "sensor_id": "HarvestChamber-SensorPod",
+                "reading_id": "Humidity",
+                "annotation_label": "Humidity (%)"
             },
             {
-                "sensor_id": 2,
-                "reading_id": 3
+                "sensor_id": "HarvestChamber-SensorPod",
+                "reading_id": "SoilMoisture",
+                "annotation_label": "Soil Moisture (%)"
             }
         ]
     }
