@@ -68,7 +68,10 @@ class AnnotationDetails(object):
 
 
 class ImageAnnotator(object):
-    SCRIPT_DIR=os.path.realpath(os.path.dirname(__file__))
+    SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
+
+    # Assets
+    LOGO_ASSET_FILE = "assets/autobloomer.png"
 
     # Fonts
     SENSOR_DATA_FONT_FILE = "assets/Sono-Medium.ttf"
@@ -105,6 +108,7 @@ class ImageAnnotator(object):
                 dst_image=annotation_image
             )
             ImageAnnotator._annotate_sensor_data(annotation_details.sensor_data_strings, annotation_image)
+            ImageAnnotator._annotate_logo(annotation_image)
 
             return Image.alpha_composite(image, annotation_image).convert('RGB')
 
@@ -281,3 +285,28 @@ class ImageAnnotator(object):
                 font=sensor_data_font,
                 anchor="ls"
             )
+
+    @staticmethod
+    def _annotate_logo(dst_image):
+        logo_path = os.path.join(ImageAnnotator.SCRIPT_DIR, ImageAnnotator.LOGO_ASSET_FILE)
+
+        with Image.open(logo_path) as logo_image:
+            # The logo will be centered and take up approximately 1/8 of the total width
+            final_logo_width = int(dst_image.width / 10)
+            scale_factor = (final_logo_width / logo_image.width)
+            final_logo_height = int(logo_image.height * scale_factor)
+            logo_scaled = logo_image.resize((final_logo_width, final_logo_height))
+
+            logo_scaled_alpha = logo_scaled.copy()
+            logo_scaled_alpha.putalpha(175)
+            logo_scaled.paste(logo_scaled_alpha, logo_scaled)
+
+            padding = int(dst_image.height / 75)
+
+            # logo_y = int(dst_image.height / 20)
+            # logo_x = int((dst_image.width / 2) - (logo_scaled.width / 2))
+
+            logo_y = padding
+            logo_x = dst_image.width - padding - logo_scaled.width
+
+            dst_image.paste(logo_scaled, (logo_x, logo_y))
