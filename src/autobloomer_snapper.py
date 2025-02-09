@@ -10,6 +10,7 @@ from image_grabber import ImageGrabber, ImageGrabberFactory
 
 CONFIG_FILE = "../autobloomer_snapper_cfg.json"
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+CACHE_PATH = os.path.join(SCRIPT_PATH, 'cache')
 IMAGE_WIDTH = 3840
 IMAGE_HEIGHT = 2160
 
@@ -28,6 +29,10 @@ def main():
     if config_response != SnapperConfigParseResponse.PARSE_OK:
         print("Could not obtain snapper config: {}".format(config_response))
         sys.exit()
+
+    # Create cache directory
+    if not os.path.exists(CACHE_PATH):
+        os.makedirs(CACHE_PATH)
 
     # Get the image grabber
     dummy_file = args.dummy_camera_file
@@ -51,7 +56,8 @@ def main():
     annotation_grabber = AnnotationGrabber(
         host=config_parser.host_name,
         port=config_parser.port_number,
-        passphrase=config_parser.passphrase
+        passphrase=config_parser.passphrase,
+        cache_path=CACHE_PATH
     )
 
     annotation_details = annotation_grabber.grab_annotations(

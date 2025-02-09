@@ -31,7 +31,7 @@ class AnnotationDetails(object):
         if isinstance(value, int):
             string_value = "{}".format(value)
         elif isinstance(value, float):
-            string_value = "{0:.2f}".format(value).rstrip('0').rstrip('.')
+            string_value = "{0:.2f}".format(value)
         elif isinstance(value, bool):
             string_value = "TRUE" if value else "FALSE"
         else:
